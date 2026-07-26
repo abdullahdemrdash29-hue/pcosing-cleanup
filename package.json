@@ -1,0 +1,8 @@
+{
+  "name": "pcosing-cleanup",
+  "version": "1.0.0",
+  "dependencies": {
+    "cloudinary": "^2.5.1",
+    "firebase-admin": "^12.6.0"
+  }
+}
