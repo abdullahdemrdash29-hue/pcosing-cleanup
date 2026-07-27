@@ -100,7 +100,20 @@ module.exports = async (req, res) => {
   const resourceType = data.postResourceType || data.mediaResourceType;
 
   await deleteFromCloudinary(publicId, resourceType);
-  await ref.remove();
+
+  if (type === "post" || type === "groupPost") {
+    // soft-delete: نسيب الـ node موجود عشان الكومنتات واللايكات القديمة متتكسرش
+    await ref.update({
+      isDeleted: true,
+      postDes: "",
+      postIv: null,
+      postPublicId: null,
+      postResourceType: null,
+    });
+  } else {
+    // chatMessage و story: حذف كامل
+    await ref.remove();
+  }
 
   res.status(200).json({ success: true });
 };
