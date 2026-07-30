@@ -101,17 +101,12 @@ module.exports = async (req, res) => {
 
   await deleteFromCloudinary(publicId, resourceType);
 
-  if (type === "post" || type === "groupPost") {
-    // soft-delete: نسيب الـ node موجود عشان الكومنتات واللايكات القديمة متتكسرش
-    await ref.update({
-      isDeleted: true,
-      postDes: "",
-      postIv: null,
-      postPublicId: null,
-      postResourceType: null,
-    });
-  } else {
-    // chatMessage و story: حذف كامل
+  // ✅ post/groupPost/chatMessage الثلاثة بيستخدموا soft-delete من التطبيق نفسه
+  // (isDeleted=true مع إبقاء الكومنتات/اللايكات/الـ replies)، فالسيرفر هنا بيمسح بس
+  // من Cloudinary ومش بيلمس Firebase خالص - عشان منتعارضش مع التحديث اللي التطبيق
+  // بيعمله بالتوازي. الاستوري بس هو اللي لسه بيتمسح بالكامل من Firebase، لأنه مفيهوش
+  // مفهوم "ثريد ردود" محتاج نحافظ عليه.
+  if (type === "story") {
     await ref.remove();
   }
 
